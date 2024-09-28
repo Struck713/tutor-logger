@@ -1,5 +1,6 @@
 <script lang="ts">
     import { AuthController } from "../../../shared/auth/AuthController";
+    import { goto, invalidateAll } from "$app/navigation";
 
     let loading = false;
     
@@ -10,8 +11,12 @@
         if (!(email && password)) return;
 
         loading = true;
-        await AuthController.signin(email, password)
+        const response = await AuthController.signin(email, password)
             .catch(_ => null);
+
+        await invalidateAll();
+            
+        if (response) await goto("/dashboard")
         loading = false;
     }
 
