@@ -1,5 +1,5 @@
 import { Lucia } from 'lucia';
-import { RemultLuciaAdapter } from '../../shared/auth/AuthAdapter';
+import { RemultLuciaAdapter } from '../shared/auth/AuthAdapter';
 
 const adapter = new RemultLuciaAdapter();
 
@@ -13,7 +13,7 @@ export const lucia = new Lucia(adapter, {
 	getUserAttributes: (attributes) => {
 		return {
 			// attributes has the type of DatabaseUserAttributes
-			username: attributes.username
+			email: attributes.email
 		};
 	}
 });
@@ -26,5 +26,5 @@ declare module 'lucia' {
 }
 
 interface DatabaseUserAttributes {
-	username: string;
+	email?: string;
 }

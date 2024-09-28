@@ -3,24 +3,25 @@ import { remult } from 'remult';
 import { createKnexDataProvider } from "remult/remult-knex";
 import { remultSveltekit } from 'remult/remult-sveltekit';
 import { Request } from '../../../shared/Request';
-import { lucia } from '$lib/auth/lucia';
+import { lucia } from '$lib/lucia';
+
+declare module 'remult' {
+	export interface RemultContext {
+		session: import('lucia').Session | null;
+		setHeaders(headers: Record<string, string>): void;
+		setCookie(...args: Parameters<RequestEvent['cookies']['set']>): void;
+		deleteCookie(...args: Parameters<RequestEvent['cookies']['delete']>): void;
+	}
+}
 
 export const _api = remultSveltekit({
-    logApiEndPoints: false,
 	admin: true,
 	initRequest: async (event) => {
 		const sessionId = event.cookies.get(lucia.sessionCookieName);
-		console.log(`remult initRe`, { sessionId });
 
-		remult.context.setHeaders = (headers) => {
-			event.setHeaders(headers);
-		};
-		remult.context.setCookie = (name, value, opts) => {
-			event.cookies.set(name, value, opts);
-		};
-		remult.context.deleteCookie = (name, opts) => {
-			event.cookies.delete(name, opts);
-		};
+		remult.context.setHeaders = (headers) => event.setHeaders(headers);
+		remult.context.setCookie = (name, value, opts) => event.cookies.set(name, value, opts);
+		remult.context.deleteCookie = (name, opts) => event.cookies.delete(name, opts);
 
 		if (sessionId) {
 			const { session, user } = await lucia.validateSession(sessionId);
@@ -33,7 +34,7 @@ export const _api = remultSveltekit({
 			}
 
 			remult.context.session = session;
-			remult.user = user ? { id: user.id, name: user.username, roles: [] } : undefined;
+			remult.user = user ? { id: user.id, name: user.email, roles: [] } : undefined;
 		}
 	},
     dataProvider: createKnexDataProvider({
@@ -50,14 +51,13 @@ export const { GET, POST, PUT, DELETE } = _api;
 export const _getUserOnServer = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get(lucia.sessionCookieName);
 
-	if (!sessionId) {
-		return { session: undefined, user: undefined };
-	}
+	if (!sessionId) return { session: undefined, user: undefined };
+
 	return await _api.withRemult(event, async () => {
 		const { session, user } = await lucia.validateSession(sessionId);
 
 		remult.context.session = session;
-		remult.user = user ? { id: user.id, name: user.username, roles: [] } : undefined;
+		remult.user = user ? { id: user.id, name: user.email, roles: [] } : undefined;
 
 		return {
 			session,
@@ -65,12 +65,3 @@ export const _getUserOnServer = async (event: RequestEvent) => {
 		};
 	});
 };
-
-declare module 'remult' {
-	export interface RemultContext {
-		session: import('lucia').Session | null;
-		setHeaders(headers: Record<string, string>): void;
-		setCookie(...args: Parameters<RequestEvent['cookies']['set']>): void;
-		deleteCookie(...args: Parameters<RequestEvent['cookies']['delete']>): void;
-	}
-}

@@ -1,21 +1,21 @@
 
 import { BackendMethod, remult } from 'remult';
-import { AuthUser } from './AuthUser.js';
+import { User } from '../User.js';
 
 export class AuthController {
 	@BackendMethod({ allowed: true })
-	static async signup(username: string, password: string) {
-		const { lucia } = await import('../../lib/auth/lucia.js');
+	static async signup(email: string, password: string) {
+		const { lucia } = await import('../../lib/lucia.js');
 		const { Argon2id } = await import('oslo/password');
 		const hashedPassword = await new Argon2id().hash(password);
 
-		const existingUser = await remult.repo(AuthUser).findOne({ where: { username } });
+		const existingUser = await remult.repo(User).findOne({ where: { email } });
 		if (existingUser) {
 			throw Error("You can't signup twice !");
 		}
 		try {
-			const user = await remult.repo(AuthUser).insert({
-				username,
+			const user = await remult.repo(User).insert({
+				email,
 				hashedPassword
 			});
 			const session = await lucia.createSession(user.id, {});
@@ -23,7 +23,7 @@ export class AuthController {
 
 			remult.context.setCookie(sessionCookie.name, sessionCookie.value, { path: '/' });
 			remult.context.session = session;
-			remult.user = { id: user.id, name: user.username, roles: [] };
+			remult.user = { id: user.id, name: user.email, roles: [] };
 		} catch (error) {
 			throw Error('An error occured while signing up !');
 		}
@@ -32,10 +32,10 @@ export class AuthController {
 	}
 
 	@BackendMethod({ allowed: true })
-	static async signin(username: string, password: string) {
-		const { lucia } = await import('../../lib/auth/lucia.js');
+	static async signin(email: string, password: string) {
+		const { lucia } = await import('../../lib/lucia.js');
 		const { Argon2id } = await import('oslo/password');
-		const existingUser = await remult.repo(AuthUser).findOne({ where: { username } });
+		const existingUser = await remult.repo(User).findOne({ where: { email } });
 		if (existingUser) {
 			const validPassword = await new Argon2id().verify(existingUser.hashedPassword, password);
 			if (validPassword) {
@@ -44,7 +44,7 @@ export class AuthController {
 
 				remult.context.setCookie(sessionCookie.name, sessionCookie.value, { path: '/' });
 				remult.context.session = session;
-				remult.user = { id: existingUser.id, name: existingUser.username, roles: [] };
+				remult.user = { id: existingUser.id, name: existingUser.email, roles: [] };
 
 				return 'ok';
 			}
@@ -54,7 +54,7 @@ export class AuthController {
 
 	@BackendMethod({ allowed: true })
 	static async signout() {
-		const { lucia } = await import('../../lib/auth/lucia.js');
+		const { lucia } = await import('../../lib/lucia.js');
 		if (remult.context.session) {
 			await lucia.invalidateSession(remult.context.session.id);
 		}

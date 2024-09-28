@@ -1,47 +1,22 @@
 import type { Adapter, DatabaseSession, DatabaseUser } from 'lucia';
 import { remult } from 'remult';
-import { AuthUser, AuthUserSession } from './AuthUser';
+import { User, Session } from '../User';
 
 export class RemultLuciaAdapter implements Adapter {
-	async getSessionAndUser(
-		sessionId: string
-	): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {
-		const session = await remult.repo(AuthUserSession).findId(sessionId);
+	
+	getSessionAndUser = async (sessionId: string): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> => {
+		const session = await remult.repo(Session).findId(sessionId);
 		if (session) {
-			const user = await remult.repo(AuthUser).findId(session.userId);
-			return [
-				{ ...session, attributes: {} },
-				{ ...user, attributes: { username: user?.username } }
-			] as any;
+			const user = await remult.repo(User).findId(session.userId);
+			if (user) return [ { ...session, attributes: {} }, { id: user.id, attributes: { email: user.email } }];
 		}
 		return [null, null];
 	}
-	async getUserSessions(userId: string): Promise<DatabaseSession[]> {
-		return (await remult.repo(AuthUserSession).find({ where: { userId } })).map((s) => {
-			return { ...s, attributes: {} };
-		});
-	}
-	async setSession(session: DatabaseSession): Promise<void> {
-		await remult.repo(AuthUserSession).insert(session);
-	}
-	async updateSessionExpiration(sessionId: string, expiresAt: Date): Promise<void> {
-		await remult.repo(AuthUserSession).update(sessionId, { expiresAt });
-	}
-	async deleteSession(sessionId: string): Promise<void> {
-		await remult.repo(AuthUserSession).delete(sessionId);
-	}
-	async deleteUserSessions(userId: string): Promise<void> {
-		const all = await remult.repo(AuthUserSession).find({ where: { userId } });
-		for (const s of all) {
-			await remult.repo(AuthUserSession).delete(s);
-		}
-	}
-	async deleteExpiredSessions(): Promise<void> {
-		const all = await remult
-			.repo(AuthUserSession)
-			.find({ where: { expiresAt: { $lt: new Date() } } });
-		for (const s of all) {
-			await remult.repo(AuthUserSession).delete(s);
-		}
-	}
+
+	getUserSessions = async (userId: string): Promise<DatabaseSession[]> => (await remult.repo(Session).find({ where: { userId } })).map((s) => ({ ...s, attributes: {} }));
+	setSession = async (session: DatabaseSession): Promise<void> => { await remult.repo(Session).insert(session) };
+	updateSessionExpiration = async (sessionId: string, expiresAt: Date): Promise<void> => { await remult.repo(Session).update(sessionId, { expiresAt }); }
+	deleteSession = async (sessionId: string): Promise<void> => { await remult.repo(Session).delete(sessionId); }
+	deleteUserSessions = async (userId: string): Promise<void> => { await remult.repo(Session).deleteMany({ where: { userId } }); }
+	deleteExpiredSessions = async (): Promise<void> => { await remult.repo(Session).deleteMany({ where: { expiresAt: { $lt: new Date() } } }); }
 }
