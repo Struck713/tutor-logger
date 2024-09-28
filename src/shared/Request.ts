@@ -1,5 +1,7 @@
 
-import { Allow, Entity, Fields } from 'remult'
+import type { User } from 'lucia'
+import { Allow, Entity, Fields, Relations } from 'remult'
+import { User as AuthUser } from './User'
 
 export enum Course {
   CS1A = "Computer Science IA",
@@ -39,6 +41,12 @@ export enum Course {
 export class Request {
   @Fields.cuid()
   id!: string
+
+  @Fields.string()
+  userId = ""
+
+  @Relations.toOne<Request, AuthUser >(() => AuthUser, "userId") 
+  user?: User
 
   @Fields.string()
   name?: string

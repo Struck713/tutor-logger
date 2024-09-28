@@ -4,19 +4,22 @@
     import { Request } from "../../shared/Request";
     import moment from "moment";
     import { DATE_FORMAT } from "$lib/util";
+    import type { PageData } from "../$types";
+
+    export let data: PageData;
 
     const repo = remult.repo(Request);
 
     let paginator: Paginator<Request>;
 
     const createPaginator = async () => paginator = await repo
-        .query({ pageSize: 10, orderBy: { createdAt: "desc" } })
+        .query({ pageSize: 10, orderBy: { createdAt: "desc" }, include: { user: { include: { email: true } } } })
         .paginator();
 
     const nextPage = async () => paginator = await paginator.nextPage();
 
     const handleCheckIn = async (id: string) => {
-        await repo.update(id, { helpedAt: new Date() });
+        await repo.update(id, { helpedAt: new Date(), userId: data.user.id });
         await createPaginator();
     }
     

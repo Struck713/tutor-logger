@@ -1,7 +1,9 @@
-import { Entity, Fields, Validators } from "remult";
+import { Allow, Entity, Fields, Relations, Validators } from "remult";
+import { Request } from "./Request";
 
 @Entity('user', {
-	allowApiCrud: false
+	allowApiCrud: false,
+	allowApiRead: Allow.authenticated,
 })
 export class User {
 	@Fields.cuid()
@@ -16,6 +18,9 @@ export class User {
 		]
 	})
 	email!: string;
+
+	@Relations.toMany(() => Request)
+	requests: Request[] = [];
 
 	@Fields.string({ includeInApi: false })
 	hashedPassword!: string;
