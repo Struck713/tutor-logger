@@ -10,7 +10,7 @@
         if (!(email && password)) return;
 
         loading = true;
-        await AuthController.signin(email, password)
+        await AuthController.signup(email, password)
             .catch(_ => null);
         loading = false;
     }
@@ -29,7 +29,7 @@
                 <input bind:value={password} type="password" name="password" placeholder="Password" />
             </label>
         </fieldset>
-        <input type="submit" value="Login" />
+        <input type="submit" value="Register" />
     </form>
 </div>
 

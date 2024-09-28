@@ -5,7 +5,8 @@ export enum Course {
   CS1A = "Computer Science IA",
   CS1B = "Computer Science IB",
   CS2 = "Computer Science II",
-  CS3 = "Computer Science III"
+  CS3 = "Computer Science III",
+  OTHER = "Other"
 }
 
 @Entity('request', {

@@ -4,6 +4,8 @@ import { createKnexDataProvider } from "remult/remult-knex";
 import { remultSveltekit } from 'remult/remult-sveltekit';
 import { Request } from '../../../shared/Request';
 import { lucia } from '$lib/lucia';
+import { Session, User } from '../../../shared/User';
+import { AuthController } from '../../../shared/auth/AuthController';
 
 declare module 'remult' {
 	export interface RemultContext {
@@ -38,12 +40,13 @@ export const _api = remultSveltekit({
 		}
 	},
     dataProvider: createKnexDataProvider({
-        client: "sqlite3",
+		client: "sqlite3",
         connection: {
-            filename: "./data.db"
+			filename: "./data.db"
         }
     }),
-    entities: [Request],
+	controllers: [AuthController], 
+    entities: [Request, User, Session],
 });
 
 export const { GET, POST, PUT, DELETE } = _api;

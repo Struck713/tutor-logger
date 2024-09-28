@@ -8,16 +8,14 @@
     let loading = false;
     let request: Request;
 
+    let name: string;
+    let course = Course.CS1A;
+    let issue: string;
+
     const repo = remult.repo(Request);
-    const onSubmit = async (event: SubmitEvent) => {
-        const formData = new FormData(event.target as HTMLFormElement)
-        event.preventDefault();
+    const handleSubmit = async () => {
         loading = true;
-        request = await repo.insert({
-            name: formData.get("name")?.toString(),
-            course: formData.get("class")?.toString() as Course,
-            issue: formData.get("issue")?.toString()
-        });
+        request = await repo.insert({ name, course, issue });
         loading = false;
         submitted = true;
     }
@@ -35,16 +33,16 @@
 
 <div class="center">
     {#if !(submitted || loading)}   
-        <form on:submit|preventDefault={onSubmit}>
+        <form on:submit|preventDefault={handleSubmit}>
             <fieldset role="group">
-            <input name="name" type="text" placeholder="Enter your name" />
-            <select name="class" aria-label="Select your class" required>
+            <input bind:value={name} name="name" type="text" placeholder="Enter your name" />
+            <select bind:value={course} name="class" aria-label="Select your class" required>
                 <option selected disabled value="">Select your class</option>
                 {#each Object.values(Course) as name}
                     <option value={name}>{name}</option>
                 {/each}
             </select>
-            <input name="issue" type="text" placeholder="What's your issue?" />
+            <input bind:value={issue} name="issue" type="text" placeholder="What's your issue?" />
             <input type="submit" value="Sign in" aria-busy={loading} />
             </fieldset>
         </form>
