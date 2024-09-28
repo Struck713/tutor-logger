@@ -1,2 +1,2 @@
 
-export const DATE_FORMAT = "MM/DD/YYYY h:mm:ss a";
+export const DATE_FORMAT = "h:mm:ss a";
