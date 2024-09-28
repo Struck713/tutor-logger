@@ -1,6 +1,8 @@
 import { Entity, Fields, Validators } from "remult";
 
-@Entity('user')
+@Entity('user', {
+	allowApiCrud: false
+})
 export class User {
 	@Fields.cuid()
 	id!: string;
@@ -19,7 +21,9 @@ export class User {
 	hashedPassword!: string;
 }
 
-@Entity('session')
+@Entity('session', {
+	allowApiCrud: false
+})
 export class Session {
 	@Fields.cuid()
 	id!: string;

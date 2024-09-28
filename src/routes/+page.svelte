@@ -32,20 +32,23 @@
 </style>
 
 <div class="center">
-    {#if !(submitted || loading)}   
-        <form on:submit|preventDefault={handleSubmit}>
-            <fieldset role="group">
-            <input bind:value={name} name="name" type="text" placeholder="Enter your name" />
-            <select bind:value={course} name="class" aria-label="Select your class" required>
-                <option selected disabled value="">Select your class</option>
-                {#each Object.values(Course) as name}
-                    <option value={name}>{name}</option>
-                {/each}
-            </select>
-            <input bind:value={issue} name="issue" type="text" placeholder="What's your issue?" />
-            <input type="submit" value="Sign in" aria-busy={loading} />
-            </fieldset>
-        </form>
+    {#if !(submitted || loading)}
+        <div>
+            <p>Welcome to tutoring! Please sign in and a tutor will be with you.</p>
+            <form on:submit|preventDefault={handleSubmit}>
+                <fieldset role="group">
+                <input bind:value={name} name="name" type="text" placeholder="Enter your name" />
+                <select bind:value={course} name="class" aria-label="Select your class" required>
+                    <option selected disabled value="">Select your class</option>
+                    {#each Object.values(Course) as name}
+                        <option value={name}>{name}</option>
+                    {/each}
+                </select>
+                <input bind:value={issue} name="issue" type="text" placeholder="What's your issue?" />
+                <input type="submit" value="Sign in" aria-busy={loading} />
+                </fieldset>
+            </form>
+        </div>    
     {:else}
         <div>
             <h1>Find a seat, {request?.name}!</h1>
