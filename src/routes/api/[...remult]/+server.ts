@@ -1,11 +1,13 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { remult } from 'remult';
-import { createKnexDataProvider } from "remult/remult-knex";
+import { MongoDataProvider} from "remult/remult-mongo";
 import { remultSveltekit } from 'remult/remult-sveltekit';
 import { Request } from '../../../shared/Request';
 import { lucia } from '$lib/lucia';
 import { Session, User } from '../../../shared/User';
 import { AuthController } from '../../../shared/auth/AuthController';
+import { MongoClient } from 'mongodb';
+import { env } from '$env/dynamic/private';
 
 declare module 'remult' {
 	export interface RemultContext {
@@ -39,12 +41,11 @@ export const _api = remultSveltekit({
 			remult.user = user ? { id: user.id, name: user.email, roles: [] } : undefined;
 		}
 	},
-    dataProvider: createKnexDataProvider({
-		client: "sqlite3",
-        connection: {
-			filename: "./data.db"
-        }
-    }),
+    dataProvider: async () => {
+		const client = new MongoClient(env.DB_URL)
+		await client.connect()
+		return new MongoDataProvider(client.db("tutortracker"), client)
+	  },
 	controllers: [AuthController], 
     entities: [Request, User, Session],
 });

@@ -4,6 +4,6 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [sveltekit()],
 	optimizeDeps: {
-		exclude: [ "@node-rs/argon2-win32-x64-msvc", "@node-rs/bcrypt-win32-x64-msvc"]
+		exclude: ['@node-rs/argon2', '@node-rs/bcrypt']
 	}
 });
