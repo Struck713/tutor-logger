@@ -5,6 +5,7 @@ import Credentials from '@auth/core/providers/credentials';
 import { SvelteKitAuth } from '@auth/sveltekit';
 import { remult } from 'remult';
 import { User } from './shared/User.js';
+import Bun from "bun"
 
 export const { handle: handleAuth } = SvelteKitAuth({
   trustHost: true,
@@ -21,15 +22,17 @@ export const { handle: handleAuth } = SvelteKitAuth({
       authorize: async ({ email, password }, request) => {
         if (!email || !password) return null;
         const res = await _api.withRemult({ request } as any, async () => {
-          let user = await remult.repo(User).findFirst({ email: email });
+          let user = await remult.repo(User).findFirst({ email });
           if (!user) return null;
-          if (!await Bun.password.verify(user.hashedPassword, password as string)) return null;
+          if (!await Bun.password.verifySync(password as string, user.hashedPassword).catch(_ => false)) return null;
           return {
             id: user.id,
             email: user.email,
             roles: user.roles,
           }
-        })
+        }).catch(_ => null);
+
+        console.log(res);
 
         return res
       }
