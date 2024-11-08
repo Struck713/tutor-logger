@@ -1,13 +1,11 @@
 import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "../$types";
-import { _getUserOnServer } from "../api/[...remult]/+server";
+import { remult } from "remult";
 
 export const load = (async (event) => {
-	const { user } = await _getUserOnServer(event);
-
-	if (!user) {
-		return redirect(307, "/auth/login");
+	if (!remult.authenticated()) {
+	   throw redirect(303, "/auth/signin")
 	}
 
-	return { user };
+	return { user: remult.user };
 }) satisfies LayoutServerLoad;

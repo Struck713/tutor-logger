@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { AuthController } from "../../../shared/auth/AuthController";
     import { goto, invalidateAll } from "$app/navigation";
+    import { signIn } from "@auth/sveltekit/client";
 
     let loading = false;
-    
+
     let email: string;
     let password: string;
 
@@ -11,11 +11,11 @@
         if (!(email && password)) return;
 
         loading = true;
-        const response = await AuthController.signin(email, password)
+        const response = await signIn("credentials", { email, password })
             .catch(_ => null);
 
         await invalidateAll();
-            
+
         if (response) await goto("/dashboard")
         loading = false;
     }

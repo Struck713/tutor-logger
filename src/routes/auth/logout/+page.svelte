@@ -1,10 +1,10 @@
 <script lang="ts">
     import { goto, invalidateAll } from "$app/navigation";
     import { onMount } from "svelte";
-    import { AuthController } from "../../../shared/auth/AuthController";
-    
+    import { signOut } from "@auth/sveltekit/client";
+
     onMount(async () => {
-        await AuthController.signout().catch(_ => null);
+        await signOut();
         await invalidateAll();
         await goto("/auth/login");
     });

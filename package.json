@@ -12,6 +12,7 @@
   "devDependencies": {
     "@picocss/pico": "^2.0.6",
     "@sveltejs/adapter-auto": "^3.0.0",
+    "@sveltejs/adapter-vercel": "^5.4.4",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/bun": "^1.1.10",
@@ -25,9 +26,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@lucia-auth/adapter-sqlite": "^3.0.2",
-    "@node-rs/argon2": "^1.8.3",
-    "lucia": "^3.2.0",
+    "@auth/core": "^0.37.3",
+    "@auth/sveltekit": "^1.7.3",
     "moment": "^2.30.1",
     "mongodb": "^6.9.0",
     "sqlite3": "^5.1.7"

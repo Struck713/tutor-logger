@@ -19,23 +19,11 @@ export class User {
 	})
 	email!: string;
 
+  roles: string[] = [];
+
 	@Relations.toMany(() => Request)
 	requests: Request[] = [];
 
 	@Fields.string({ includeInApi: false })
 	hashedPassword!: string;
-}
-
-@Entity('session', {
-	allowApiCrud: false
-})
-export class Session {
-	@Fields.cuid()
-	id!: string;
-
-	@Fields.date()
-	expiresAt!: Date;
-
-	@Fields.string()
-	userId!: string;
 }

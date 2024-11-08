@@ -7,8 +7,9 @@
     import type { PageData } from "../$types";
 
     export let data: PageData;
-
     const repo = remult.repo(Request);
+
+    console.log(data.user);
 
     let paginator: Paginator<Request>;
 
@@ -22,7 +23,7 @@
         await repo.update(id, { helpedAt: new Date(), userId: data.user.id });
         await createPaginator();
     }
-    
+
     onMount(createPaginator);
 </script>
 
