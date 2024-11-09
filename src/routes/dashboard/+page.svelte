@@ -8,13 +8,10 @@
 
     export let data: PageData;
     const repo = remult.repo(Request);
-
-    console.log(data.user);
-
     let paginator: Paginator<Request>;
 
     const createPaginator = async () => paginator = await repo
-        .query({ pageSize: 10, orderBy: { createdAt: "desc" }, include: { user: { include: { email: true } } } })
+        .query({ pageSize: 10, orderBy: { createdAt: "desc" }, include: { user: true } })
         .paginator();
 
     const nextPage = async () => paginator = await paginator.nextPage();

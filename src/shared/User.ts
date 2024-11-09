@@ -9,19 +9,12 @@ export class User {
 	@Fields.cuid()
 	id!: string;
 
-	@Fields.string<User>({
-		validate: [
-			Validators.unique(),
-			(e) => {
-				if (e.email.length < 2) throw 'Must be at least 2 characters long';
-			}
-		]
-	})
+	@Fields.string()
 	email!: string;
 
-  roles: string[] = [];
+	roles: string[] = [];
 
-	@Relations.toMany(() => Request)
+	@Relations.toMany(() => Request, "userId")
 	requests: Request[] = [];
 
 	@Fields.string({ includeInApi: false })

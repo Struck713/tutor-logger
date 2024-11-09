@@ -42,10 +42,10 @@ export class Request {
   @Fields.cuid()
   id!: string
 
-  @Fields.string()
+  @Fields.string({ dbName: "userId" })
   userId = ""
 
-  @Relations.toOne<Request, AuthUser >(() => AuthUser, "userId") 
+  @Relations.toOne<Request, AuthUser>(() => AuthUser, "userId") 
   user?: User
 
   @Fields.string()

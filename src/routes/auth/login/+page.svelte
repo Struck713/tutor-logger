@@ -11,12 +11,8 @@
         if (!(email && password)) return;
 
         loading = true;
-        const response = await signIn("credentials", { email, password })
+        await signIn("credentials", { email, password, callbackUrl: "/dashboard"})
             .catch(_ => null);
-
-        await invalidateAll();
-
-        if (response) await goto("/dashboard")
         loading = false;
     }
 

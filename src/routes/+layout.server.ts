@@ -3,9 +3,5 @@ import type { LayoutServerLoad } from "../$types";
 import { remult } from "remult";
 
 export const load = (async (event) => {
-	if (!remult.authenticated()) {
-	   throw redirect(303, "/auth/login")
-	}
-
 	return { user: remult.user };
 }) satisfies LayoutServerLoad;
