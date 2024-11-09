@@ -43,7 +43,8 @@ export class Request {
   @Fields.string()
   userId = ""
 
-  @Relations.toOne(() => User, { fields: { id: "userId" } }) 
+  // For some reason this is the only way it works
+  @Relations.toOne(() => User, { fields: { id: "userId" } })
   user?: User
 
   @Fields.string()
@@ -54,6 +55,9 @@ export class Request {
 
   @Fields.enum(() => Course)
   course?: Course
+
+  @Fields.boolean()
+  online = false
 
   @Fields.date()
   helpedAt?: Date = undefined
