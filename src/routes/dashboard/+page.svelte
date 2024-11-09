@@ -11,7 +11,7 @@
     let paginator: Paginator<Request>;
 
     const createPaginator = async () => paginator = await repo
-        .query({ pageSize: 10, orderBy: { createdAt: "desc" }, include: { user: true } })
+        .query({ pageSize: 10, orderBy: { createdAt: "desc" }, include: { user: true }})
         .paginator();
 
     const nextPage = async () => paginator = await paginator.nextPage();
@@ -37,14 +37,14 @@
         </thead>
         <tbody>
             {#if paginator}
-                {#each paginator.items as { id, name, course, helpedAt, createdAt, issue }}
+                {#each paginator.items as { id, name, course, helpedAt, createdAt, issue, user }}
                     <tr>
                         <th scope="row">{name}</th>
                         <td>{course}</td>
                         <td>{issue}</td>
                         <td>{moment(createdAt).format(DATE_FORMAT)}</td>
                         {#if helpedAt}
-                            <td>{moment(helpedAt).format(DATE_FORMAT)}</td>
+                            <td>{moment(helpedAt).format(DATE_FORMAT)} by {user?.email}</td>
                         {:else}
                             <td><a href="#checkin" on:click|preventDefault={() => handleCheckIn(id)}>Check in</a></td>
                         {/if}

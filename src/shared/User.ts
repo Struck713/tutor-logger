@@ -14,7 +14,7 @@ export class User {
 
 	roles: string[] = [];
 
-	@Relations.toMany(() => Request, "userId")
+	@Relations.toMany(() => Request, { field: "user" })
 	requests: Request[] = [];
 
 	@Fields.string({ includeInApi: false })
